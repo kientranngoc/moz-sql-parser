@@ -89,8 +89,6 @@ def to_json_operator(instring, tokensStart, retTokens):
 
 def to_json_call(instring, tokensStart, retTokens):
     # ARRANGE INTO {op: params} FORMAT
-    # import pdb
-    # pdb.set_trace()
     tok = retTokens
     op = tok.op.lower()
 
