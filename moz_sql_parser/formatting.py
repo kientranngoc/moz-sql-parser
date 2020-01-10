@@ -195,6 +195,9 @@ class Formatter:
         parts.append('END')
         return ' '.join(parts)
 
+    def _interval(self, json):
+        return 'INTERVAL {0} {1}'.format(json[0], json[1])
+
     def _literal(self, json):
         if isinstance(json, list):
             return '({0})'.format(', '.join(self._literal(v) for v in json))

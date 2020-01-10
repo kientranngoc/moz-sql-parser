@@ -15,7 +15,7 @@ import sys
 from pyparsing import Combine, Forward, Group, Keyword, Literal, Optional, ParserElement, Regex, Word, ZeroOrMore, alphanums, alphas, delimitedList, infixNotation, opAssoc, restOfLine
 
 from moz_sql_parser.debugs import debug
-from moz_sql_parser.keywords import AND, AS, ASC, BETWEEN, CASE, COLLATE_NOCASE, CROSS_JOIN, DESC, ELSE, END, FROM, FULL_JOIN, FULL_OUTER_JOIN, GROUP_BY, HAVING, IN, INNER_JOIN, IS, IS_NOT, JOIN, LEFT_JOIN, LEFT_OUTER_JOIN, LIKE, LIMIT, NOT_BETWEEN, NOT_IN, NOT_LIKE, OFFSET, ON, OR, ORDER_BY, RESERVED, RIGHT_JOIN, RIGHT_OUTER_JOIN, SELECT, THEN, UNION, UNION_ALL, USING, WHEN, WHERE
+from moz_sql_parser.keywords import AND, AS, ASC, BETWEEN, CASE, COLLATE_NOCASE, CROSS_JOIN, DESC, ELSE, END, FROM, FULL_JOIN, FULL_OUTER_JOIN, GROUP_BY, HAVING, IN, INTERVAL, INNER_JOIN, IS, IS_NOT, JOIN, LEFT_JOIN, LEFT_OUTER_JOIN, LIKE, LIMIT, NOT_BETWEEN, NOT_IN, NOT_LIKE, OFFSET, ON, OR, ORDER_BY, RESERVED, RIGHT_JOIN, RIGHT_OUTER_JOIN, SELECT, THEN, UNION, UNION_ALL, USING, WHEN, WHERE
 
 ParserElement.enablePackrat()
 
@@ -89,6 +89,8 @@ def to_json_operator(instring, tokensStart, retTokens):
 
 def to_json_call(instring, tokensStart, retTokens):
     # ARRANGE INTO {op: params} FORMAT
+    # import pdb
+    # pdb.set_trace()
     tok = retTokens
     op = tok.op.lower()
 
@@ -111,6 +113,9 @@ def to_case_call(instring, tokensStart, retTokens):
         cases.append(elze)
     return {"case": cases}
 
+def to_interval_call(instring, tokensStart, retTokens):
+    tok = retTokens[1:]
+    return {"interval": tok}
 
 def to_when_call(instring, tokensStart, retTokens):
     tok = retTokens
@@ -202,12 +207,19 @@ case = (
     END
 ).addParseAction(to_case_call)
 
+interval = (
+    INTERVAL +
+    expr("value").setDebugActions(*debug) +
+    expr("unit").setDebugActions(*debug)
+).addParseAction(to_interval_call)
+
 selectStmt = Forward()
 compound = (
     (Keyword("not", caseless=True)("op").setDebugActions(*debug) + expr("params")).addParseAction(to_json_call) |
     (Keyword("distinct", caseless=True)("op").setDebugActions(*debug) + expr("params")).addParseAction(to_json_call) |
     Keyword("null", caseless=True).setName("null").setDebugActions(*debug) |
     case |
+    interval |
     (Literal("(").setDebugActions(*debug).suppress() + selectStmt + Literal(")").suppress()) |
     (Literal("(").setDebugActions(*debug).suppress() + Group(delimitedList(expr)) + Literal(")").suppress()) |
     realNum.setName("float").setDebugActions(*debug) |

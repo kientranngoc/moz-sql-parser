@@ -18,6 +18,7 @@ FULL_OUTER_JOIN = None
 GROUP_BY = None
 HAVING = None
 IN = None
+INTERVAL = None
 INNER_JOIN = None
 IS = None
 IS_NOT = None
