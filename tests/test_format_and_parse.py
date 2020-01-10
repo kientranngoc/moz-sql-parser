@@ -1081,3 +1081,8 @@ from benn.college_football_players
             expected_json = {'select': {'value': 't1.field1'},
                              'from': ['t1', {join_keyword: 't2', 'on': {'eq': ['t1.id', 't2.id']}}]}
             self.verify_formatting(expected_sql, expected_json)
+
+    def test_193(self):
+        expected_sql = "SELECT DATE_ADD(CURRENT_DATE(), INTERVAL -1 DAY) FROM a"
+        expected_json = {'select': {'value': {'date_add': [{'current_date': {}}, {'interval': [-1, 'DAY']}]}}, 'from': 'a'}
+        self.verify_formatting(expected_sql, expected_json)
