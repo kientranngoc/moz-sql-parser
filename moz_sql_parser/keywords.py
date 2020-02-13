@@ -38,6 +38,7 @@ RIGHT_JOIN = None
 RIGHT_OUTER_JOIN = None
 SELECT = None
 THEN = None
+UNNEST = None
 UNION = None
 UNION_ALL = None
 USING = None

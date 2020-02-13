@@ -21,7 +21,7 @@ from moz_sql_parser.debugs import debug
 from moz_sql_parser.keywords import AND, AS, ASC, BETWEEN, CASE, COLLATE_NOCASE, CROSS_JOIN, DESC, ELSE, END, FROM, \
     FULL_JOIN, FULL_OUTER_JOIN, GROUP_BY, HAVING, IN, INNER_JOIN, IS, IS_NOT, JOIN, LEFT_JOIN, LEFT_OUTER_JOIN, LIKE, \
     LIMIT, NOT_BETWEEN, NOT_IN, NOT_LIKE, OFFSET, ON, OR, ORDER_BY, RESERVED, RIGHT_JOIN, RIGHT_OUTER_JOIN, SELECT, \
-    THEN, UNION, UNION_ALL, USING, WHEN, WHERE, binary_ops, unary_ops, WITH, durations
+    THEN, UNNEST, UNION, UNION_ALL, USING, WHEN, WHERE, binary_ops, unary_ops, WITH, durations
 
 ParserElement.enablePackrat()
 
@@ -186,6 +186,13 @@ def to_select_call(instring, tokensStart, retTokens):
     else:
         return tok
 
+def to_unnest_call(instring, tokensStart, retTokens):
+    op = retTokens[0]
+    assert op == 'unnest'
+    column = retTokens[1]['value'][0][0]
+    name = retTokens[2]
+
+    return {"unnest": {"name": name, "value": column}}
 
 def to_union_call(instring, tokensStart, retTokens):
     tok = retTokens[0].asDict()
@@ -333,6 +340,15 @@ selectColumn = Group(
 ).setName("column").addParseAction(to_select_call)
 
 table_source = (
+    (
+        UNNEST +
+        Literal("(").setDebugActions(*debug).suppress() +
+        selectColumn +
+        Literal(")").setDebugActions(*debug).suppress() +
+        AS.suppress() +
+        ident.setName("table alias").setDebugActions(*debug)
+    ).addParseAction(to_unnest_call)
+    |
     (
         (Literal("(").suppress() + ordered_sql + Literal(")").suppress()).setDebugActions(*debug) |
         call_function

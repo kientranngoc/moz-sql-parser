@@ -317,6 +317,9 @@ class Formatter:
             rest = joiner.join(parts)
             return 'FROM {0}'.format(rest)
 
+    def _unnest(self, json):
+        return 'UNNEST({0}) AS {1}'.format(json['value'], json['name'])
+
     def where(self, json):
         if 'where' in json:
             return 'WHERE {0}'.format(self.dispatch(json['where']))

@@ -209,6 +209,11 @@ from benn.college_football_players
                          'select': '*'}
         self.verify_formatting(expected_sql, expected_json)
 
+    def test_unnest(self):
+        expected_sql =  "SELECT a FROM t6, UNNEST(b) AS ub"
+        expected_json = {'from': ['t6', {'unnest': {'name': 'ub', 'value': 'b'}}], 'select': {'value': 'a'}}
+        self.verify_formatting(expected_sql, expected_json)
+
     @skip("Not sure why")
     def test_not_equal(self):
         expected_sql = "select * from task where build.product is not null and build.product!='firefox'"

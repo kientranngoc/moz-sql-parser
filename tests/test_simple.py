@@ -459,6 +459,11 @@ class TestSimple(TestCase):
                     {'full outer join': 't2', 'on': {'eq': ['t1.id', 't2.id']}}]}
         self.assertEqual(result, expected)
 
+    def test_unnest(self):
+        result = parse("SELECT a FROM t6, UNNEST(b) AS ub")
+        expected = {'from': ['t6', {'unnest': {'name': 'ub', 'value': 'b'}}], 'select': {'value': 'a'}}
+        self.assertEqual(result, expected)
+
     def test_join_via_using(self):
         result = parse("SELECT t1.field1 FROM t1 JOIN t2 USING (id)")
         expected = {'select': {'value': 't1.field1'},
