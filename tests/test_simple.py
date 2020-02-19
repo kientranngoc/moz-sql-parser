@@ -460,8 +460,8 @@ class TestSimple(TestCase):
         self.assertEqual(result, expected)
 
     def test_unnest(self):
-        result = parse("SELECT a FROM t6, UNNEST(b) AS ub")
-        expected = {'from': ['t6', {'unnest': {'name': 'ub', 'value': 'b'}}], 'select': {'value': 'a'}}
+        result = parse("SELECT * FROM t6, UNNEST(b) AS ub")
+        expected = {'from': ['t6', {'unnest': {'name': 'ub', 'value': 'b'}}], 'select': '*'}
         self.assertEqual(result, expected)
 
     def test_join_via_using(self):

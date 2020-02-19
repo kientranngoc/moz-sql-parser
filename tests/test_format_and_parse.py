@@ -210,8 +210,8 @@ from benn.college_football_players
         self.verify_formatting(expected_sql, expected_json)
 
     def test_unnest(self):
-        expected_sql =  "SELECT a FROM t6, UNNEST(b) AS ub"
-        expected_json = {'from': ['t6', {'unnest': {'name': 'ub', 'value': 'b'}}], 'select': {'value': 'a'}}
+        expected_sql =  "SELECT * FROM t6, UNNEST(b) AS ub"
+        expected_json = {'from': ['t6', {'unnest': {'name': 'ub', 'value': 'b'}}], 'select': '*'}
         self.verify_formatting(expected_sql, expected_json)
 
     @skip("Not sure why")
