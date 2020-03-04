@@ -1093,3 +1093,12 @@ from benn.college_football_players
             expected_json = {'select': {'value': 't1.field1'},
                              'from': ['t1', {join_keyword: 't2', 'on': {'eq': ['t1.id', 't2.id']}}]}
             self.verify_formatting(expected_sql, expected_json)
+
+    def test_193(self):
+        expected_sql = parse("SELECT first_name FROM Professionals UNION SELECT first_name FROM Owners EXCEPT SELECT name FROM Dogs")
+        expected_json = {'except': [{'union': [{'from': 'Professionals',
+                                            'select': {'value': 'first_name'}},
+                                           {'from': 'Owners', 'select': {'value': 'first_name'}}]},
+                                {'from': 'Dogs', 'select': {'value': 'name'}}]}
+
+        self.verify_formatting(expected_sql, expected_json)

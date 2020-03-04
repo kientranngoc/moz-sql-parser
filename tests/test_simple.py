@@ -13,7 +13,7 @@ import json
 from unittest import TestCase, skipIf
 
 from moz_sql_parser import parse
-from test_resources import IS_MASTER
+from .test_resources import IS_MASTER
 
 try:
     from tests.util import assertRaises
@@ -422,6 +422,25 @@ class TestSimple(TestCase):
             ]},
             'orderby': {"value": 'x'}
         }
+        self.assertEqual(result, expected)
+
+    def test_intersect(self):
+        result = parse("SELECT b FROM t6 INTERSECT SELECT '3' AS x ORDER BY x")
+        expected = {
+            "from": {'intersect': [
+                {'from': 't6', 'select': {'value': 'b'}},
+                {'select': {'value': {'literal': '3'}, 'name': 'x'}}
+            ]},
+            'orderby': {"value": 'x'}
+        }
+        self.assertEqual(result, expected)
+
+    def test_union_except(self):
+        result = parse("SELECT first_name FROM Professionals UNION SELECT first_name FROM Owners EXCEPT SELECT name FROM Dogs")
+        expected = {'except': [{'union': [{'from': 'Professionals',
+                                            'select': {'value': 'first_name'}},
+                                           {'from': 'Owners', 'select': {'value': 'first_name'}}]},
+                                {'from': 'Dogs', 'select': {'value': 'name'}}]}
         self.assertEqual(result, expected)
 
     def test_left_outer_join(self):

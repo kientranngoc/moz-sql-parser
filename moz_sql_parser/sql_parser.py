@@ -18,8 +18,8 @@ from pyparsing import Combine, Forward, Group, Keyword, Literal, Optional, Parse
     alphanums, alphas, delimitedList, infixNotation, opAssoc, restOfLine
 
 from moz_sql_parser.debugs import debug
-from moz_sql_parser.keywords import AND, AS, ASC, BETWEEN, CASE, COLLATE_NOCASE, CROSS_JOIN, DESC, ELSE, END, FROM, \
-    FULL_JOIN, FULL_OUTER_JOIN, GROUP_BY, HAVING, IN, INNER_JOIN, IS, IS_NOT, JOIN, LEFT_JOIN, LEFT_OUTER_JOIN, LIKE, \
+from moz_sql_parser.keywords import AND, AS, ASC, BETWEEN, CASE, COLLATE_NOCASE, CROSS_JOIN, DESC, ELSE, END, EXCEPT, FROM, \
+    FULL_JOIN, FULL_OUTER_JOIN, GROUP_BY, HAVING, IN, INNER_JOIN, INTERSECT, IS, IS_NOT, JOIN, LEFT_JOIN, LEFT_OUTER_JOIN, LIKE, \
     LIMIT, NOT_BETWEEN, NOT_IN, NOT_LIKE, OFFSET, ON, OR, ORDER_BY, RESERVED, RIGHT_JOIN, RIGHT_OUTER_JOIN, SELECT, \
     THEN, UNNEST, UNION, UNION_ALL, USING, WHEN, WHERE, binary_ops, unary_ops, WITH, durations
 
@@ -201,15 +201,19 @@ def to_union_call(instring, tokensStart, retTokens):
         output = unions[0]
     else:
         sources = [unions[i] for i in range(0, len(unions), 2)]
-        operators = [unions[i] for i in range(1, len(unions), 2)]
-        op = operators[0].lower().replace(" ", "_")
-        if any(o.lower().replace(" ", "_") != op for o in operators[1:]):
-            raise Exception("Expecting all \"union all\" or all \"union\", not some combination")
+        operators = [unions[i].lower().replace(" ", "_") for i in range(1, len(unions), 2)]
+
+        def build_op(op, a, b):
+            return {op: [a, b]}
+
+        output = sources[0]
+        for i in range(len(operators)):
+            output = build_op(operators[i], output, sources[i+1])
 
         if not tok.get('orderby') and not tok.get('limit'):
-            return {op: sources}
+            return output
         else:
-            output = {"from": {op: sources}}
+            output = {"from": output}
 
     if tok.get('orderby'):
         output["orderby"] = tok.get('orderby')
@@ -391,7 +395,7 @@ unordered_sql = Group(
 ordered_sql << Group(
     Group(Group(
         unordered_sql +
-        ZeroOrMore((UNION_ALL | UNION) + unordered_sql)
+        ZeroOrMore((UNION_ALL | UNION | INTERSECT | EXCEPT) + unordered_sql)
     )("union"))("from") +
     Optional(ORDER_BY.suppress().setDebugActions(*debug) + delimitedList(Group(sortColumn))("orderby").setName("orderby")) +
     Optional(LIMIT.suppress().setDebugActions(*debug) + expr("limit")) +
