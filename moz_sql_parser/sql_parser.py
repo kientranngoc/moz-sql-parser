@@ -234,6 +234,19 @@ def to_with_clause(instring, tokensStart, retTokens):
     return query
 
 
+def unquote_numeric(instring, tokensStart, retTokens):
+    val = unquote(instring, tokensStart, retTokens)
+    val = val.lstrip('0')
+    if not val:
+        val = '0'
+    un = ast.literal_eval(val)
+    return un
+
+def unquote_ident(instring, tokensStart, retTokens):
+    val = unquote(instring, tokensStart, retTokens)
+    un = ast.literal_eval(val)
+    return un
+
 def unquote(instring, tokensStart, retTokens):
     val = retTokens[0]
     if val.startswith("'") and val.endswith("'"):
@@ -246,8 +259,7 @@ def unquote(instring, tokensStart, retTokens):
         val = '"' + val[1:-1].replace("``","`") + '"'
     elif val.startswith("+"):
         val = val[1:]
-    un = ast.literal_eval(val)
-    return un
+    return val
 
 
 def to_string(instring, tokensStart, retTokens):
@@ -256,13 +268,13 @@ def to_string(instring, tokensStart, retTokens):
     return {"literal": ast.literal_eval(val)}
 
 # NUMBERS
-realNum = Regex(r"[+-]?(\d+\.\d*|\.\d+)([eE][+-]?\d+)?").addParseAction(unquote)
-intNum = Regex(r"[+-]?\d+([eE]\+?\d+)?").addParseAction(unquote)
+realNum = Regex(r"[+-]?(\d+\.\d*|\.\d+)([eE][+-]?\d+)?").addParseAction(unquote_numeric)
+intNum = Regex(r"[+-]?\d+([eE]\+?\d+)?").addParseAction(unquote_numeric)
 
 # STRINGS, NUMBERS, VARIABLES
 sqlString = Regex(r"\'(\'\'|\\.|[^'])*\'").addParseAction(to_string)
-identString = Regex(r'\"(\"\"|\\.|[^"])*\"').addParseAction(unquote)
-mysqlidentString = Regex(r'\`(\`\`|\\.|[^`])*\`').addParseAction(unquote)
+identString = Regex(r'\"(\"\"|\\.|[^"])*\"').addParseAction(unquote_ident)
+mysqlidentString = Regex(r'\`(\`\`|\\.|[^`])*\`').addParseAction(unquote_ident)
 ident = Combine(~RESERVED + (delimitedList(Literal("*") | identString | mysqlidentString | Word(IDENT_CHAR), delim=".", combine=True))).setName("identifier")
 
 # EXPRESSIONS

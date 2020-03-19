@@ -1108,3 +1108,9 @@ from benn.college_football_players
         expected_json = {'select': {'value': {'st_distance': [{'st_geogpoint': [24.7028, 10.8418]}, {'st_geogpoint': [24.2028, 10.3418]}]}}}
 
         self.verify_formatting(expected_sql, expected_json)
+
+    def test_195(self):
+        expected_sql = parse("SELECT * FROM dim_date WHERE dim_date.month = 006")
+        expected_json = {'select': '*', 'from': 'dim_date', 'where': {'eq': ['dim_date.month', 6]}}
+
+        self.verify_formatting(expected_sql, expected_json)
