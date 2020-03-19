@@ -1102,3 +1102,9 @@ from benn.college_football_players
                                 {'from': 'Dogs', 'select': {'value': 'name'}}]}
 
         self.verify_formatting(expected_sql, expected_json)
+
+    def test_194(self):
+        expected_sql = parse("select ST_DISTANCE(ST_GEOGPOINT(24.7028, 10.8418), ST_GEOGPOINT(24.2028, 10.3418))")
+        expected_json = {'select': {'value': {'st_distance': [{'st_geogpoint': [24.7028, 10.8418]}, {'st_geogpoint': [24.2028, 10.3418]}]}}}
+
+        self.verify_formatting(expected_sql, expected_json)
