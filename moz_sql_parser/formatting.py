@@ -250,7 +250,7 @@ class Formatter:
         if isinstance(json, list):
             return '({0})'.format(', '.join(self._literal(v) for v in json))
         elif isinstance(json, string_types):
-            return "'{0}'".format(json.replace("'", "''"))
+            return "{0}".format(repr(json))
         else:
             return str(json)
 

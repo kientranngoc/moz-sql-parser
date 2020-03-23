@@ -45,7 +45,7 @@ class TestSimple(TestCase):
             "select": {"value": {"literal": "'"}},
             "from": "dual",
         })
-        expected = "SELECT '''' FROM dual"
+        expected = "SELECT \"'\" FROM dual"
         self.assertEqual(result, expected)
 
     def test_select_quoted_name(self):
@@ -137,6 +137,19 @@ class TestSimple(TestCase):
             ]},
         })
         expected = "SELECT a FROM dual WHERE a IN ('r', 'g', 'b') AND b IN (10, 11, 12)"
+        self.assertEqual(result, expected)
+
+    def test_where_quote(self):
+        result = format({
+            "select": {"value": "a"},
+            "from": "dual",
+            "where": {"eq": [
+                "a",
+                {"literal": "R's"},
+            ]},
+        })
+
+        expected = "SELECT a FROM dual WHERE a = \"R's\""
         self.assertEqual(result, expected)
 
     def test_eq(self):
