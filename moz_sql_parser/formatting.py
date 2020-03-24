@@ -140,9 +140,10 @@ class Formatter:
     _binary_and = Operator("&")
     _binary_or = Operator("|")
 
-    def __init__(self, ansi_quotes=True, should_quote=should_quote):
+    def __init__(self, ansi_quotes=True, should_quote=should_quote, quote_slash_escape=False):
         self.ansi_quotes = ansi_quotes
         self.should_quote = should_quote
+        self.quote_slash_escape = quote_slash_escape
 
     def format(self, json):
         return self.query(json)
@@ -250,7 +251,9 @@ class Formatter:
         if isinstance(json, list):
             return '({0})'.format(', '.join(self._literal(v) for v in json))
         elif isinstance(json, string_types):
-            return "{0}".format(repr(json))
+            if self.quote_slash_escape:
+                return "{0}".format(repr(json))
+            return "'{0}'".format(json.replace("'", "''"))
         else:
             return str(json)
 
