@@ -970,6 +970,11 @@ class TestSimple(TestCase):
         expected = {"select": {"value": {"interval": [30.5, "month"]}}}
         self.assertEqual(result, expected)
 
+        sql = "select INTErval 30.5 month"
+        result = parse(sql)
+        expected = {"select": {"value": {"interval": [30.5, "month"]}}}
+        self.assertEqual(result, expected)
+
     def test_date_less_interval(self):
         sql = "select DATE '2020 01 25' - interval 4 seconds"
         result = parse(sql)
