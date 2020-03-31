@@ -154,7 +154,10 @@ def to_date_call(instring, tokensStart, retTokens):
 
 def to_interval_call(instring, tokensStart, retTokens):
     # ARRANGE INTO {interval: params} FORMAT
-    return {"interval": [retTokens['count'], retTokens['duration'][:-1]]}
+    unit = retTokens['duration']
+    if unit[-1].lower() == 's':
+        unit = unit[:-1]
+    return {"interval": [retTokens['count'], unit]}
 
 
 def to_when_call(instring, tokensStart, retTokens):
