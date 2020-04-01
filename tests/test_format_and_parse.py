@@ -1114,3 +1114,10 @@ from benn.college_football_players
         expected_json = {'select': '*', 'from': 'dim_date', 'where': {'eq': ['dim_date.month', 6]}}
 
         self.verify_formatting(expected_sql, expected_json)
+
+    def test_196(self):
+        expected_sql = parse("SELECT DATE_ADD(CURRENT_DATE(), INTERVAL -1 DAY) FROM a")
+        expected_json = {'select': {'value': {'date_add': [{'current_date': {}}, {'interval': [-1, 'day']}]}}, 'from': 'a'}
+
+        self.verify_formatting(expected_sql, expected_json)
+

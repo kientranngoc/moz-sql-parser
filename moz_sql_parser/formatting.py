@@ -279,6 +279,9 @@ class Formatter:
             join_keyword.upper(), self.dispatch(json[join_keyword]), self.dispatch(json['on'])
         )
 
+    def _interval(self, json):
+        return 'INTERVAL {0} {1}'.format(json[0], json[1].upper())
+
     def union(self, json):
         return ' UNION '.join(self.query(query) for query in json)
 
