@@ -160,6 +160,10 @@ def to_interval_call(instring, tokensStart, retTokens):
     return {"interval": [retTokens['count'], unit]}
 
 
+def to_cast_call(instring, tokensStart, retTokens):
+    return {"cast": [retTokens["value"][0], retTokens["type"][0].lower()]}
+
+
 def to_when_call(instring, tokensStart, retTokens):
     tok = retTokens
     return {"when": tok.when, "then":tok.then}
@@ -315,12 +319,20 @@ interval = (
     _or([Keyword(d, caseless=True)("duration") for d in durations])
 ).addParseAction(to_interval_call).setDebugActions(*debug)
 
+cast = (
+    Keyword("cast", caseless=True).suppress().setDebugActions(*debug) +
+    Literal("(").suppress() +
+    expr("value") + AS.suppress() + expr("type") +
+    Literal(")").suppress()
+).addParseAction(to_cast_call).setDebugActions(*debug)
+
 compound = (
     Keyword("null", caseless=True).setName("null").setDebugActions(*debug) |
     (Keyword("not", caseless=True)("op").setDebugActions(*debug) + expr("params")).addParseAction(to_json_call) |
     (Keyword("distinct", caseless=True)("op").setDebugActions(*debug) + expr("params")).addParseAction(to_json_call) |
     (Keyword("date", caseless=True).setDebugActions(*debug) + sqlString("params")).addParseAction(to_date_call) |
     interval |
+    cast |
     case |
     (Literal("(").suppress() + ordered_sql + Literal(")").suppress()) |
     (Literal("(").suppress() + Group(delimitedList(expr)) + Literal(")").suppress()) |
