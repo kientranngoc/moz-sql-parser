@@ -141,6 +141,6 @@ durations = [
     "weeks",
     "month",
     "months",
-    "year"
+    "year",
     "years"
 ]
