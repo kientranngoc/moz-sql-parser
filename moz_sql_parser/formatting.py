@@ -282,6 +282,9 @@ class Formatter:
     def _interval(self, json):
         return 'INTERVAL {0} {1}'.format(json[0], json[1].upper())
 
+    def _cast(self, json):
+        return 'CAST({0} AS {1})'.format(self.dispatch(json[0]), json[1].upper())
+
     def union(self, json):
         return ' UNION '.join(self.query(query) for query in json)
 

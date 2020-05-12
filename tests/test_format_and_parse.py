@@ -1121,3 +1121,15 @@ from benn.college_football_players
 
         self.verify_formatting(expected_sql, expected_json)
 
+    def test_197(self):
+        expected_sql = "SELECT CAST('2020-05-04' AS DATETIME)"
+        expected_json = {'select': {'value': {'cast': [{'literal': '2020-05-04'}, 'datetime']}}}
+
+        self.assertEqual(expected_sql, format(parse(expected_sql)))
+        self.verify_formatting(expected_sql, expected_json)
+
+        expected_sql = "SELECT CAST(3.14 AS STRING)"
+        expected_json = {'select': {'value': {'cast': [3.14, 'string']}}}
+
+        self.assertEqual(expected_sql, format(parse(expected_sql)))
+        self.verify_formatting(expected_sql, expected_json)
