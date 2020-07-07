@@ -212,6 +212,18 @@ from benn.college_football_players
     def test_unnest(self):
         expected_sql =  "SELECT * FROM t6, UNNEST(b) AS ub"
         expected_json = {'from': ['t6', {'unnest': {'name': 'ub', 'value': 'b'}}], 'select': '*'}
+
+    def test_with_cte(self):
+        expected_sql = "WITH t AS (SELECT a FROM table) SELECT * FROM t"
+        expected_json = {'select': '*', 'from': 't', 'with': {'name': 
+                         't', 'value': {'select': {'value': 'a'}, 'from': 'table'}}}
+        self.verify_formatting(expected_sql, expected_json)
+
+    def test_with_cte_various(self):
+        expected_sql = "WITH t1 AS (SELECT a FROM table), t2 AS (SELECT 1) SELECT * FROM t1, t2"
+        expected_json = {'select': '*', 'from': ['t1', 't2'], 
+                         'with': [{'name': 't1', 'value': {'select': {'value': 'a'}, 'from': 'table'}}, 
+                                  {'name': 't2', 'value': {'select': {'value': 1}}}]}
         self.verify_formatting(expected_sql, expected_json)
 
     @skip("Not sure why")
@@ -1095,6 +1107,10 @@ from benn.college_football_players
             self.verify_formatting(expected_sql, expected_json)
 
     def test_193(self):
+        expected_sql = "SELECT id, CASE WHEN id < 13 THEN 'child' WHEN id < 20 THEN 'teenager' ELSE 'adult' END AS id_range FROM users"
+        self.assertEqual(expected_sql, format(parse(expected_sql)))
+
+    def test_193_union(self):
         expected_sql = parse("SELECT first_name FROM Professionals UNION SELECT first_name FROM Owners EXCEPT SELECT name FROM Dogs")
         expected_json = {'except': [{'union': [{'from': 'Professionals',
                                             'select': {'value': 'first_name'}},
