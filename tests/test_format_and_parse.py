@@ -780,7 +780,7 @@ from benn.college_football_players
 
     def test_119(self):
         expected_sql = "SELECT 3, 4 UNION SELECT * FROM t3"
-        expected_json = {'union': [{'select': [{'value': 3}, {'value': 4}]}, {'from': 't3', 'select': '*'}]}
+        expected_json = {'from': {'union': [{'select': [{'value': 3}, {'value': 4}]}, {'from': 't3', 'select': '*'}]}}
         self.verify_formatting(expected_sql, expected_json)
 
     @skip("Need to figure out how to wrap the select in ()")
@@ -1112,10 +1112,10 @@ from benn.college_football_players
 
     def test_193_union(self):
         expected_sql = parse("SELECT first_name FROM Professionals UNION SELECT first_name FROM Owners EXCEPT SELECT name FROM Dogs")
-        expected_json = {'except': [{'union': [{'from': 'Professionals',
+        expected_json = {'from': {'except': [{'union': [{'from': 'Professionals',
                                             'select': {'value': 'first_name'}},
                                            {'from': 'Owners', 'select': {'value': 'first_name'}}]},
-                                {'from': 'Dogs', 'select': {'value': 'name'}}]}
+                                {'from': 'Dogs', 'select': {'value': 'name'}}]}}
 
         self.verify_formatting(expected_sql, expected_json)
 

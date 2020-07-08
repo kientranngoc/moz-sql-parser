@@ -437,10 +437,10 @@ class TestSimple(TestCase):
 
     def test_union_except(self):
         result = parse("SELECT first_name FROM Professionals UNION SELECT first_name FROM Owners EXCEPT SELECT name FROM Dogs")
-        expected = {'except': [{'union': [{'from': 'Professionals',
+        expected = {'from': {'except': [{'union': [{'from': 'Professionals',
                                             'select': {'value': 'first_name'}},
                                            {'from': 'Owners', 'select': {'value': 'first_name'}}]},
-                                {'from': 'Dogs', 'select': {'value': 'name'}}]}
+                                {'from': 'Dogs', 'select': {'value': 'name'}}]}}
         self.assertEqual(result, expected)
 
     def test_left_outer_join(self):
@@ -742,10 +742,10 @@ class TestSimple(TestCase):
 
     def test_union_all2(self):
         result = parse("SELECT b UNION ALL SELECT c")
-        expected = {'union_all': [
+        expected = {'from': {'union_all': [
             {'select': {'value': 'b'}},
             {'select': {'value': 'c'}},
-        ]}
+        ]}}
         self.assertEqual(result, expected)
 
     def test_issue106(self):
@@ -873,10 +873,10 @@ class TestSimple(TestCase):
                 {"name": "a", "value": {"select": {"value": 1}}},
                 {"name": "b", "value": {"select": {"value": 2}}}
             ],
-            "union_all": [
+            "from": {"union_all": [
                 {"select": "*", "from": "a"},
                 {"select": "*", "from": "b"},
-            ]
+            ]}
         }
         self.assertEqual(result, expected)
 

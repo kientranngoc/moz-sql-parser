@@ -339,6 +339,13 @@ class Formatter:
             from_ = json['from']
             if 'union' in from_:
                 return self.union(from_['union'])
+            if 'union_all' in from_:
+                return self.union_all(from_['union_all'])
+            if 'intersect' in from_:
+                return self.intersect(from_['intersect'])
+            if 'except' in from_:
+                return self._except(from_['except'])
+
             if not isinstance(from_, list):
                 from_ = [from_]
 
