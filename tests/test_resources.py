@@ -1064,13 +1064,13 @@ class TestResources(TestCase):
     def test_119(self):
         sql = "SELECT 3, 4 UNION SELECT * FROM t3"
         result = parse(sql)
-        expected = {"union": [
+        expected = {"from": {"union": [
             {"select": [{"value": 3}, {"value": 4}]},
             {
                 "from": "t3",
                 "select": "*"
             }
-        ]}
+        ]}}
         self.assertEqual(result, expected)
 
     def test_120(self):

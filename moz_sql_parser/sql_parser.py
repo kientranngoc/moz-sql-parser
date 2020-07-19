@@ -217,10 +217,7 @@ def to_union_call(instring, tokensStart, retTokens):
         for i in range(len(operators)):
             output = build_op(operators[i], output, sources[i+1])
 
-        if not tok.get('orderby') and not tok.get('limit'):
-            return output
-        else:
-            output = {"from": output}
+        output = {"from": output}
 
     if tok.get('orderby'):
         output["orderby"] = tok.get('orderby')
