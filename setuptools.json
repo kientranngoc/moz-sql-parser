@@ -12,7 +12,7 @@
     ],
     "description": "Extract Parse Tree from SQL",
     "include_package_data": true,
-    "install_requires": ["mo-future>=3.31.20024", "pyparsing==2.3.1"],
+    "install_requires": ["mo-future>=3.31.20024", "pyparsing==2.4.7"],
     "license": "MPL 2.0",
     "long_description": {
         "$concat": [
